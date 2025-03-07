@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('code');
-            $table->enum('type', ['cr', 'dr']);
+            $table->enum('action', ['cr', 'dr']);
             $table->string('thumbnail')->nullable();
             $table->softDeletes();
             $table->timestamps();
