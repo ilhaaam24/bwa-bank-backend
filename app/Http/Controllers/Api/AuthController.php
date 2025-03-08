@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+
+
+use Tymon\JWTAuth\Facades\JWTAuth;
+use tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -77,6 +81,34 @@ class AuthController extends Controller
 
 
         return response()->json(['message' => 'success'],200);
+
+    }
+
+
+    public function login(Request $request){
+        $credentials = $request->only('email', 'password');
+
+
+        $validator = Validator::make($credentials,[
+            'email' =>  'required|email',
+            'password' => 'required|string|min:8',
+        ]);
+
+
+        if($validator->fails()){
+            return response()->json(['errors' => $validator->errors()],400);
+        }
+        try {
+            $token = JWTAuth::attempt($credentials);
+
+            if(!$token){
+                return response()->json(['message' => 'Login credentials are invalid'],401);
+            }
+
+            return response()->json(['token' => $token],200);
+        } catch (JWTException $th) {
+            return response()->json(['message' => 'Could not create token', 'error' => $th->getMessage()], 500);
+        }
 
     }
 
