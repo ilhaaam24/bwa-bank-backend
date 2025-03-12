@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Melihovv\Base64ImageDecoder\Base64ImageDecoder;
+use Tymon\JWTAuth\JWT;
 
 class AuthController extends Controller
 {
@@ -72,6 +73,18 @@ class AuthController extends Controller
             ]);
 
             DB::commit();
+
+
+            $token = JWTAuth::attempt(['email' => $request->email, 'password' => $request->password]);
+
+            $userResponse = $this->getUser(param: $request->email);
+            $userResponse->token = $token ;
+            $userResponse->token_expires_in = auth()->factory()->getTTL() * 60;
+            $userResponse->token_type = 'bearer';
+
+
+
+            return response()->json($userResponse);
 
 
         } catch (\Throwable $th) {
