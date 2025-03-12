@@ -5,19 +5,16 @@ namespace App\Http\Controllers\Api;
 
 
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\JWTGuard;
 use tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Wallet;
-use App\Providers\helpers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Melihovv\Base64ImageDecoder\Base64ImageDecoder;
-use Tymon\JWTAuth\JWT;
 
 class AuthController extends Controller
 {
