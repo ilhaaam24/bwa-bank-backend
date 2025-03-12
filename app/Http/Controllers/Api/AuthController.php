@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api;
 
 
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\JWTGuard;
 use tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Wallet;
+use App\Providers\helpers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -18,8 +20,6 @@ use Melihovv\Base64ImageDecoder\Base64ImageDecoder;
 
 class AuthController extends Controller
 {
-    //
-
     public function register(Request $request){
         $data = $request->all();
 
@@ -105,7 +105,15 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Login credentials are invalid'],401);
             }
 
-            return response()->json(['token' => $token],200);
+       
+            $userResponse = $this->getUser(param: $request->email);
+            $userResponse->token = $token ;
+            $userResponse->token_expires_in = auth()->factory()->getTTL() * 60;
+            $userResponse->token_type = 'bearer';
+
+
+
+            return response()->json($userResponse);
         } catch (JWTException $th) {
             return response()->json(['message' => 'Could not create token', 'error' => $th->getMessage()], 500);
         }
@@ -135,4 +143,27 @@ class AuthController extends Controller
 
         return $image;
     }
+
+
+    private function getUser($param){
+    $user = User::where('id', $param)
+                ->orWhere('email', $param)
+                ->orWhere('username', $param)
+                ->first();
+
+    if (!$user) {
+        return null;
+    }
+
+    $wallet = Wallet::where('user_id', $user->id)->first();
+
+    $user->profile_picture = $user->profile_picture ? url('storage/' . $user->profile_picture) : "";
+    $user->ktp = $user->ktp ? url('storage/' . $user->ktp) : "";
+    $user->balance = $wallet ? $wallet->balance : 0;
+    $user->card_number = $wallet ? $wallet->card_number : "";
+    $user->pin = $wallet ? $wallet->pin : "";
+
+    return $user;
+}
+
 }
