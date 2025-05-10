@@ -30,7 +30,7 @@ class WebhookController extends Controller
 
 
             if ($transaction == 'capture'){
-                if ($transaction == 'accept'){
+                if ($fraud == 'accept'){
                         // TODO set transaction status on your database to 'success'
                         // and response with 200 OK
                         $status = 'success';
