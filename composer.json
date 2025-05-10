@@ -14,6 +14,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "melihovv/base64-image-decoder": "^0.2.0",
+        "midtrans/midtrans-php": "*",
         "tymon/jwt-auth": "^2.2"
     },
     "require-dev": {
