@@ -31,7 +31,36 @@ class TopUpController extends Controller
             return response()->json(['errors' => 'Invalid pin'], 400);
         }
 
-        return response()->json(['message' => 'Top up successful'], 200);
+
+        $transactionType = TransactionType::where('code', 'top_up')->first();
+        $paymentMethod = PaymentMethod::where('code', $data['payment_method_code'])->first();
+
+
+
+        DB::beginTransaction();
+        try {
+            $transaction = Transaction::create([
+                'user_id' => auth()->user()->id,
+                'transaction_type_id' => $transactionType->id,
+                'payment_method_id' => $paymentMethod->id,
+                'amount' => $data['amount'],
+                'transaction_code' =>strtoupper( Str::random(10)),
+                'status' => 'pending',
+                'description' => 'Top up via ' . $paymentMethod->name,
+
+            ]);
+
+            $transaction->save();
+
+            DB::commit();
+            return response()->json(['message' => 'Top up successful'], 200);
+        } catch (\Throwable $th) {
+            //throw $th;
+
+            DB::rollBack();
+            return response()->json(['errors' => $th->getMessage()], 500);
+        }
+
         
       
     }
