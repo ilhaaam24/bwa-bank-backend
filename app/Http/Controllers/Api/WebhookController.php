@@ -18,7 +18,7 @@ class WebhookController extends Controller
         $notif = new \Midtrans\Notification();
         $transaction = $notif->transaction_status;
         $type = $notif->payment_type;
-        $order_id = $notif->order_id;
+        $transactionCode = $notif->order_id;
         $fraud = $notif->fraud_status;
 
 
@@ -51,7 +51,7 @@ class WebhookController extends Controller
             $status = 'pending';
             }
 
-            $transaction = Transaction::where('order_id', $order_id)->first();
+            $transaction = Transaction::where('transaction_code', $transactionCode)->first();
 
             if($transaction->status != 'success'){
                 $transactionAmount = $transaction->amount;
