@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DataPlan;
 
 class OperatorCard extends Model
 {
@@ -17,4 +18,9 @@ class OperatorCard extends Model
         'status',
         'thumbnail',
     ];
+
+
+    public function dataPlans(){
+        return $this->hasMany(DataPlan::class);
+    }
 }
