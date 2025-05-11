@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\DataPlan;
+use App\Models\DataPlanHistory;
 use App\Models\PaymentMethod;
+use App\Models\Transaction;
 use App\Models\TransactionType;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class DataPlanController extends Controller
@@ -43,7 +46,35 @@ class DataPlanController extends Controller
        if($userWallet->balance < $dataPlan->price){
         return response()->json(['errors' => 'Insufficient balance'], 400);
        }
+       DB::beginTransaction();
 
-       return response()->json(['message' => 'Data plan purchased successfully'], 200);
+       try {
+            $transaction = Transaction::create([
+                'user_id' => $request->user()->id,
+                'transaction_type_id' => $transactionType->id,
+                'payment_method_id' => $paymentMethod->id,
+                'amount' => $dataPlan->price,
+                'transaction_code' => strtoupper(\Illuminate\Support\Str::random(10)),
+                'description' => 'Data Plan ' . $dataPlan->name . ' ' . $dataPlan->price,
+                'status' => 'success',
+            ]);
+
+            DataPlanHistory::create([
+                'data_plan_id' => $dataPlan->id,
+                'transaction_id' => $transactionType->id,
+                'phone_number' => $request->phone_number,
+            ]);
+
+            $userWallet->decrement('balance', $dataPlan->price);
+            
+            DB::commit();
+            return response()->json(['message' => 'Data plan purchased successfully'], 200);
+
+       } catch (\Throwable $th) {
+        //throw $th;
+        DB::rollBack();
+        echo($th);
+        return response()->json(['errors' => 'Failed to purchase data plan'], 500);
        }
+}
 }
