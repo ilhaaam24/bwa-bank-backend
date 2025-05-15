@@ -14,8 +14,7 @@ class OperatorCardController extends Controller
 
         $operatorCards = OperatorCard::with('dataPlans')
                 ->where('status', 'active')->paginate($limit);
-
-
+                
         $operatorCards->getCollection()->transform(function($item){
             $item->thumbnail = $item->thumbnail ? url($item->thumbnail) : '';
             return $item;
