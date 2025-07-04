@@ -24,6 +24,7 @@ Route::get('/tes', function () {
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/is_email_exists', [UserController::class, 'isEmailExists']);
 
 
 Route::post('/webhook', [WebhookController::class, 'update']);
