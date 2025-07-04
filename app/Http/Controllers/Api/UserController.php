@@ -18,4 +18,19 @@ class UserController extends Controller
             'data' => $user
         ]);
     }
+
+    public function getUserByUsername(Request $request, $username){
+        $users = User::select('id', 'name', 'username', 'profile_picture', 'verified')->where('username', 'LIKE', '%'.$username.'%')->where('id', '<>', auth()->user()->id)->get();
+
+        $users = $users->map(function($item){
+            $item->profile_picture = $item->profile_picture ? url('storage/'.$item->profile_picture) : "";
+            return $item;
+        });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Users fetched successfully',
+            'data' => $users
+        ]);
+    }
 }

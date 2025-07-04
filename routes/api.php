@@ -37,4 +37,5 @@ Route::group(['middleware' => 'jwt.auth'], function($router){
   Route::get('transfer_histories', [TransferHistoryController::class, 'index']);
   Route::get('transactions', [TransactionController::class, 'index']);
   Route::get('users', [UserController::class, 'show']);
+  Route::get('users/{username}', [UserController::class, 'getUserByUsername']);
 });
