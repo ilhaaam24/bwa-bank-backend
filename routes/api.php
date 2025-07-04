@@ -41,5 +41,6 @@ Route::group(['middleware' => 'jwt.auth'], function($router){
   Route::get('users', [UserController::class, 'show']);
   Route::get('users/{username}', [UserController::class, 'getUserByUsername']);
   Route::put('users', [UserController::class, 'update']);
-  Route::get('wallet', [WalletController::class, 'show']);
+  Route::get('wallets', [WalletController::class, 'show']);
+  Route::put('wallets', [WalletController::class, 'update']);
 });
