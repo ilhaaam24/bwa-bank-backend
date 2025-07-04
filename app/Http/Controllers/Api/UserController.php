@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -32,5 +32,55 @@ class UserController extends Controller
             'message' => 'Users fetched successfully',
             'data' => $users
         ]);
+    }
+
+    public function update(Request $request){
+
+        try {
+            $user = User::find(auth()->user()->id); 
+
+            $data = $request->only('name', 'username','email' ,'ktp', 'password');
+
+            if($request->username != $user->username){
+                $usernameExist = User::where('username', $request->username)->exists();
+                if($usernameExist){
+                    return response()->json(['message' => 'Username already exists'], 409);
+                }
+            }
+
+            if($request->email != $user->email){
+                $emailExists = User::where('email', $request->email)->exists();
+                if($emailExists){
+                    return response()->json(['message' => 'Email already exists'], 409);
+                }
+            }
+            
+            if($request->password){
+                $data['password'] = bcrypt($request->password);
+            }
+
+            if($request->profile_picture){
+                $profilePicture = upload64Image($request->profile_picture);
+                $data['profile_picture'] = $profilePicture;
+                if($user->profile_picture){
+                    Storage::delete('public/'.$user->profile_picture);
+                }
+            }
+
+            if($request->ktp){
+                $ktpPicture = upload64Image($request->ktp);
+                $data['profile_picture'] = $ktpPicture;
+                $data['verified'] = true;
+                if($user->ktp){
+                    Storage::delete('public/'.$user->ktp);
+                }
+            }
+
+            $user->update($data);
+            return response()->json(['message'=> 'User Updated']);
+        } catch (\Throwable $th) {
+            return response()->json(['message'=> $th->getMessage()], 500);
+        }
+
     }
 }
