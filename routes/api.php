@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\TopUpController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\TransferHistoryController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WebhookController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Models\OperatorCard;
@@ -35,4 +36,5 @@ Route::group(['middleware' => 'jwt.auth'], function($router){
   Route::get('payment_methods', [PaymentMethodController::class, 'index']);
   Route::get('transfer_histories', [TransferHistoryController::class, 'index']);
   Route::get('transactions', [TransactionController::class, 'index']);
+  Route::get('users', [UserController::class, 'show']);
 });
