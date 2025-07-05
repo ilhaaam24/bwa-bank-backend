@@ -8,6 +8,6 @@ Route::get('/', function () {
 });
 
 
-// Route::prefix('api')->group(function () {
-//     Route::post('/register', [AuthController::class, 'register']);
-// });
+Route::group(['prefix'=>'admin'], function(){
+    Route::view('/','dashboard');
+});
