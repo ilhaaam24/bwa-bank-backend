@@ -31,6 +31,7 @@ Route::post('/is_email_exists', [UserController::class, 'isEmailExists']);
 Route::post('/webhook', [WebhookController::class, 'update']);
 
 Route::group(['middleware' => 'jwt.auth'], function($router){
+  Route::post('/logout', [AuthController::class, 'logout']);
   Route::post('top_ups', [TopUpController::class, 'store']);
   Route::post('transfers', [TransferController::class, 'store']);
   Route::post('data_plans', [DataPlanController::class, 'store']);
